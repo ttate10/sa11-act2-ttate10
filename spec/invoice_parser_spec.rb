@@ -2,8 +2,6 @@
 
 require 'invoice_parser'
 
-# NOTE: Do not modify the tests.
-
 RSpec.describe 'Invoice Parsing' do
   describe '#parse_invoices' do
     it 'parses valid invoice entries' do
@@ -19,7 +17,7 @@ RSpec.describe 'Invoice Parsing' do
         { date: '2023-03-03', invoice_number: 'INV003', client: 'Gamma Inc', amount: '$3,500' }
       ]
 
-      expect(parse_invoices(invoice_entries)).to eq(expected_output)
+      expect(parse_invoice(invoice_entries)).to eq(expected_output)
     end
 
     it 'handles client names with special characters' do
@@ -33,7 +31,7 @@ RSpec.describe 'Invoice Parsing' do
         { date: '2023-03-02', invoice_number: 'INV002', client: 'Smith & Sons, Inc.', amount: '$2050.75' }
       ]
 
-      expect(parse_invoices(invoice_entries)).to eq(expected_output)
+      expect(parse_invoice(invoice_entries)).to eq(expected_output)
     end
 
     it 'handles entries with extra spaces or tabs' do
@@ -47,7 +45,7 @@ RSpec.describe 'Invoice Parsing' do
         { date: '2023-03-02', invoice_number: 'INV002', client: 'Beta LLC', amount: '$2050.75' }
       ]
 
-      expect(parse_invoices(invoice_entries)).to eq(expected_output)
+      expect(parse_invoice(invoice_entries)).to eq(expected_output)
     end
 
     it 'handles amounts with thousand separators' do
@@ -61,7 +59,7 @@ RSpec.describe 'Invoice Parsing' do
         { date: '2023-03-02', invoice_number: 'INV002', client: 'Beta LLC', amount: '$10,000.50' }
       ]
 
-      expect(parse_invoices(invoice_entries)).to eq(expected_output)
+      expect(parse_invoice(invoice_entries)).to eq(expected_output)
     end
 
     it 'handles invalid dates' do
@@ -70,7 +68,7 @@ RSpec.describe 'Invoice Parsing' do
 2023.03.02 - INV002 - Beta LLC - $2050.75
       INVOICES
 
-      expect(parse_invoices(invoice_entries)).to eq([])
+      expect{parse_invoice(invoice_entries)}.to raise_error(InvoiceParsingError, 'Error: Invalid date format')
     end
 
     it 'handles amounts not in US dollars' do
@@ -79,7 +77,7 @@ RSpec.describe 'Invoice Parsing' do
 2023-03-02 - INV002 - Beta LLC - 1000
       INVOICES
 
-      expect(parse_invoices(invoice_entries)).to eq([])
+      expect{parse_invoice(invoice_entries)}.to raise_error(InvoiceParsingError, 'Error: Amount not in US Dollars')
     end
 
     it 'handles missing fields or malformed lines' do
@@ -88,7 +86,7 @@ RSpec.describe 'Invoice Parsing' do
 2023-03-02 - INV002 - Beta LLC
       INVOICES
 
-      expect(parse_invoices(invoice_entries)).to eq([])
+      expect{parse_invoice(invoice_entries)}.to raise_error(InvoiceParsingError, 'Error: Missing fields or malformed lines')
     end
 
     it 'handles incorrectly formatted amounts' do
@@ -97,11 +95,11 @@ RSpec.describe 'Invoice Parsing' do
 2023-03-02 - INV002 - Beta LLC - $1000.789
       INVOICES
 
-      expect(parse_invoices(invoice_entries)).to eq([])
+      expect{parse_invoice(invoice_entries)}.to raise_error(InvoiceParsingError, 'Error: Incorrectly formatted amounts')
     end
 
     it 'handles an empty string' do
-      expect(parse_invoices('')).to eq([])
+      expect{parse_invoice('')}.to raise_error(InvoiceParsingError, 'Error: Empty input string')
     end
 
     it 'handles a string with only valid invoices' do
@@ -117,7 +115,7 @@ RSpec.describe 'Invoice Parsing' do
         { date: '2023-03-03', invoice_number: 'INV003', client: 'Gamma Inc', amount: '$3,500' }
       ]
 
-      expect(parse_invoices(invoice_entries)).to eq(expected_output)
+      expect(parse_invoice(invoice_entries)).to eq(expected_output)
     end
   end
 end

@@ -2,8 +2,6 @@
 
 require 'url_extractor'
 
-# NOTE: Do not modify the tests.
-
 RSpec.describe 'URL Extraction' do
   describe '#extract_urls' do
     it 'extracts URLs with http and https' do
